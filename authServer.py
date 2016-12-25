@@ -67,7 +67,7 @@ def getServerKey(serverId):
     return server_keys[serverId]
 
                    
-#This route takes 2 POST parameters in a json :
+#This route takes 3 POST parameters in a json :
 #  -userId, a string representing the user's identity
 #  -encryptedId, a base64 string containing the user's id encrypted with their password.
 #  -serverId, a string describing the file server's identity
