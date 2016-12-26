@@ -60,7 +60,8 @@ def generateKey(l):
 def getServerKey(serverId):
     server_keys = {'Server1':'SecretKeyForServerOne',
                    'Server2':'MyS3rv3rK3yIsS3cure',
-                   'Server3':'tinyKey'}
+                   'Server3':'tinyKey',
+                   'Directory':'S3cretKey_Directory'}
 
     if serverId not in server_keys:
         return None
