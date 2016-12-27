@@ -89,7 +89,8 @@ def auth():
             return {'error':'Server ID unknown.'}, status.HTTP_400_BAD_REQUEST
         sessKey=generateKey(64)
         encryptedSessKey=base64.b64encode(encrypt(sessKey,serverKey))
-        token={'ticket':encryptedSessKey,'sessionKey':sessKey}
+        encryptedUserId=base64.b64encode(encrypt('user:'+userId,serverKey)) #For when the user has to give their identity to a server and can't give a fake one
+        token={'ticket':encryptedSessKey,'sessionKey':sessKey,'identity':encryptedUserId}
         encryptedToken=base64.b64encode(encrypt(json.dumps(token),getPassword(userId)))
         return {'token':encryptedToken}
     else:
