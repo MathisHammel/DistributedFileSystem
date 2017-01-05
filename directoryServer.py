@@ -123,4 +123,4 @@ if __name__ == "__main__":
     FILE_PATHS=json.loads(pathFile.read())
     pathFile.close()
     
-    app.run(debug=False)
+    app.run(debug=False, port=5002)

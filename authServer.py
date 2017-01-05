@@ -58,10 +58,8 @@ def generateKey(l):
 
 #Returns the key for one of the file servers
 def getServerKey(serverId):
-    server_keys = {'Server1':'SecretKeyForServerOne',
-                   'Server2':'MyS3rv3rK3yIsS3cure',
-                   'Server3':'tinyKey',
-                   'Directory':'S3cretKey_Directory'}
+    server_keys = {'Directory':'S3cretKey_Directory',
+                   'Lock':'S3cretKey_LockServ3r'}
 
     if serverId not in server_keys:
         return None
@@ -89,7 +87,7 @@ def auth():
             return {'error':'Server ID unknown.'}, status.HTTP_400_BAD_REQUEST
         sessKey=generateKey(64)
         encryptedSessKey=base64.b64encode(encrypt(sessKey,serverKey))
-        encryptedUserId=base64.b64encode(encrypt('user:'+userId,serverKey)) #For when the user has to give their identity to a server and can't give a fake one
+        encryptedUserId=base64.b64encode(encrypt('user:'+userId,serverKey)) #For when the user has to give their identity to a server and can't give a fake one (non-repudiation)
         token={'ticket':encryptedSessKey,'sessionKey':sessKey,'identity':encryptedUserId}
         encryptedToken=base64.b64encode(encrypt(json.dumps(token),getPassword(userId)))
         return {'token':encryptedToken}
@@ -98,4 +96,4 @@ def auth():
 
 
 if __name__ == "__main__":
-    app.run(debug=False)
+    app.run(port=5001,debug=False)

@@ -21,31 +21,63 @@ def encrypt(data,key):
 def decrypt(data,key):
     return xorstr(data,key)
 
+
+authUrl='http://localhost:5001/auth/'
+directoryUrl='http://localhost:5002/directory/'
+lockUrl='http://localhost:5003/break/'
+userId='User1'
+userPassword='Sup3rS3cr3T_P4ssW0rd!'
+
 if __name__ == "__main__":
-    authUrl='http://localhost:5000/auth/'
-    directoryUrl='http://localhost:5000/directory/'
-    userId='User1'
-    userPassword='Sup3rS3cr3T_P4ssW0rd!'
+
     encryptedUserId=base64.b64encode(encrypt(userId,userPassword))
     
     print 'Authenticating on the security server to get a directory server token'
-    authJson={'userId':'User1','encryptedId':encryptedUserId,'serverId':'Directory'}
-    print 'Sending',authJson
+    authDirJson={'userId':'User1','encryptedId':encryptedUserId,'serverId':'Directory'}
+    print 'Sending',authDirJson
     print ''
-    authRequest=requests.post(authUrl,json=authJson)
-    print 'Received status code',authRequest.status_code
-    print authRequest.text
+    authDirRequest=requests.post(authUrl,json=authDirJson)
+    print 'Received status code',authDirRequest.status_code
+    print authDirRequest.text
     print ''
 
-    token=json.loads(decrypt(base64.b64decode(authRequest.json()['token']),userPassword))
-    sessionKey=token['sessionKey']
-    print 'Decrypted token is',token
+    tokenDir=json.loads(decrypt(base64.b64decode(authDirRequest.json()['token']),userPassword))
+    sessionKeyDir=tokenDir['sessionKey']
+    print 'Decrypted token is',tokenDir
 
-    raw_input('\n\nPress enter to begin directory part')
-
-    directoryJson={'filePath':encrypt('filesystem://file1.txt',sessionKey), 'ticket':token['ticket']}
+    directoryJson={'filePath':encrypt('filesystem://file1.txt',sessionKeyDir), 'ticket':tokenDir['ticket']}
     directoryRequest=requests.post(directoryUrl,json=directoryJson)
     print 'Received status code',directoryRequest.status_code
     print directoryRequest.text
     print ''
-    print 'Decrypted path is',decrypt(base64.b64decode(directoryRequest.json()['resolvedPath']),sessionKey)
+    filepath=decrypt(base64.b64decode(directoryRequest.json()['resolvedPath']),sessionKeyDir)
+    print 'Decrypted path is',filepath
+
+
+
+
+    print 'Authenticating on the security server to get a lock server token'
+    authLockJson={'userId':'User1','encryptedId':encryptedUserId,'serverId':'Lock'}
+    print 'Sending',authLockJson
+    print ''
+    authLockRequest=requests.post(authUrl,json=authLockJson)
+    print 'Received status code',authLockRequest.status_code
+    print authLockRequest.text
+    print ''
+
+    tokenLock=json.loads(decrypt(base64.b64decode(authLockRequest.json()['token']),userPassword))
+    sessionKeyLock=tokenLock['sessionKey']
+    print 'Decrypted token is',tokenLock
+
+    lockJson={'filePath':encrypt('filesystem://'+filepath,sessionKeyLock),'identity':tokenLock['identity'],'ticket':tokenLock['ticket']}
+
+    lockRequest=requests.post(lockUrl,json=lockJson)
+    
+    print 'Received status code',lockRequest.status_code
+    print lockRequest.text
+
+
+    
+
+
+    
