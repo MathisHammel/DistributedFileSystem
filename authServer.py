@@ -58,7 +58,8 @@ def generateKey(l):
 
 #Returns the key for one of the file servers
 def getServerKey(serverId):
-    server_keys = {'Directory':'S3cretKey_Directory',
+    server_keys = {'localhost:5000':'S3cretKey_FileS3rver_1',
+                   'Directory':'S3cretKey_Directory',
                    'Lock':'S3cretKey_LockServ3r'}
 
     if serverId not in server_keys:

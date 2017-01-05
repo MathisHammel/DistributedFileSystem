@@ -77,6 +77,40 @@ if __name__ == "__main__":
     print lockRequest.text
 
 
+
+    fileServerUrl,fileServerPort,fileServerPath = filepath.split(':')
+    
+    print 'Authenticating on the security server to get a file server token'
+    authFileJson={'userId':'User1','encryptedId':encryptedUserId,'serverId':fileServerUrl+':'+fileServerPort}
+    print 'Sending',authFileJson
+    print ''
+    authFileRequest=requests.post(authUrl,json=authFileJson)
+    print 'Received status code',authFileRequest.status_code
+    print authFileRequest.text
+    print ''
+
+    tokenFile=json.loads(decrypt(base64.b64decode(authFileRequest.json()['token']),userPassword))
+    sessionKeyFile=tokenFile['sessionKey']
+    print 'Decrypted token is',tokenFile
+
+    newContents='''Nice file you got there !
+    file1.txt sure is great :)'''
+    fileContents=base64.b64encode(encrypt(newContents,sessionKeyFile))
+    
+
+    fileJson={'filePath':encrypt('filesystem://'+fileServerPath,sessionKeyFile),'ticket':tokenFile['ticket'],'fileContents':fileContents}
+    fileRequest=requests.post('http://'+fileServerUrl+':'+fileServerPort+'/push/',json=fileJson)
+
+    print 'Received status code',fileRequest.status_code
+    print fileRequest.text
+    """
+    print 'Decrypted file contents are :'
+    print '-----------------------------'
+    print decrypt(base64.b64decode(fileRequest.json()['fileContents']),sessionKeyFile)
+    print '-----------------------------'
+    """
+
+
     
 
 

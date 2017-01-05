@@ -7,7 +7,7 @@ Dependencies are Flask and Flask-API.
 To install those dependencies, use pip : `pip install flask`
 
 # Functionalities
-The system allows to pull files and push them back on the server after editing them. Everytime a file is pulled from the file servers for edition, a lock is put on the file so other users cannot edit it at the same time. A lock can be broken by anyone and the corresponding file gets immediately locked for the user who broke the lock.
+The system allows to pull files and push them back on the server after editing them. Every time a file is pulled from the file servers for edition, a lock is put on the file so other users cannot edit it at the same time. A lock can be broken by anyone and the corresponding file gets immediately locked for the user who broke the lock.
 
 Every user can see and edit all the files in the system, as well as the identity of the user who owns the lock (if there is one) for each file.
 
@@ -17,6 +17,8 @@ This distributed file system is for demo purposes only.
 - The security algorithms are extremely weak : XOR is very straightforward to break. However, the function architecture makes it pretty easy to switch encryption schemes to adopt something more robust such as RSA.
 - The databases for file lookups and locks are not optimized at all, they are currently based on JSON written to files (which makes the system easier to test)
 - There is currently no caching into the file server's memory, but this would be useful for small files mostly. Bigger files would in most cases be too costly to store into RAM.
+- The files are owned by everybody and there is no access control. Any user can read and edit every file (even locked) on the system.
+- There is no check whether or not the file contents are being transmitted correctly. TCP should do pretty well but there can still sometimes be transmission errors. A simple md5 hash can fix this.
 
 # Client specification
 The client supports commands that can either be executed from the shell like the following :
